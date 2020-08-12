@@ -10,18 +10,26 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = a.out
-
-SRC = main.c ft_validator.c libft/*.c
-
-INC = libft.h fillit.h
+NAME = fillit
+SRC = ./*.c
+OBJ = $(SRC:.c=.o)
+HEADER = fillit.h
+LIBFT = libft/
+FLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 
 $(NAME):
-	gcc -Wall -Wextra -Werror $(SRC) -I $(INC) fillit.h
+	make -C $(LIBFT)
+	gcc $(FLAGS) -c $(SRC)
+	gcc $(OBJ) libft/libft.a $(FLAGS) -o $(NAME)
 
 clean:
-	/bin/rm -f $(NAME)
+		rm -f $(OBJ)
+		make clean -C libft/
 
-re: clean all
+fclean: clean
+		rm -f $(NAME)
+		make fclean -C libft/
+		
+re: fclean all

@@ -12,37 +12,48 @@
 
 #include "fillit.h"
 
+void	fillit(char *buf, int filesize)
+{
+	t_tetramino		*head;
+	t_map			*map;
+	int				mapsize;
+	int				tetrapieces;
+
+	head = makelist(buf, filesize);
+	tetrapieces = ft_lists_counter(head) * 4;
+	mapsize = ft_mapsize(tetrapieces);
+	map = ft_map(mapsize);
+	while (!ft_solver(map, head, mapsize))
+	{
+		free_map(map, mapsize);
+		mapsize++;
+		map = ft_map(mapsize);
+	}
+	print_map(map, mapsize);
+	free_map(map, mapsize);
+	free_tetramino(head);
+}
+
 int		main(int argc, char **argv)
 {
+	char	buf[SIZE + 1];
+	int		fd;
+	int		filesize;
 
-	// this part ir checking if file with tetraminos is correct
-
+	fd = open(argv[1], O_RDONLY);
+	filesize = read(fd, buf, SIZE);
+	buf[filesize] = '\0';
+	close(fd);
 	if (argc != 2)
 	{
 		ft_putstr("usage: ./fillit tetramino_file\n");
 		return (0);
 	}
-	if (!(ft_validator(argv[1])))
+	if (!(ft_validator(buf, filesize)))
 	{
-		ft_putstr("file is empty or invalid\n");
+		ft_putstr("error\n");
 		return (0);
 	}
-
-	// this part just printing the file with getnextline , probably we delete it later.
-
-	char	*line;
-	int		fd;
-	int		ret;
-
-	fd = open(argv[1], O_RDONLY);
-	line = NULL;
-	ret = 1;
-	while (ret)
-	{
-		ret = get_next_line(fd, &line);
-		printf("%s\n", line);
-		ft_strdel(&line);
-	}
-	close(fd);
+	fillit(buf, filesize);
 	return (0);
 }
